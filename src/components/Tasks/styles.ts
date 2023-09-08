@@ -11,21 +11,23 @@ export const styles = StyleSheet.create({
         marginBottom: 10,
         padding: 8
     },
+    checkboxContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        width: '85%'
+    },
     inputCheckbox: {
-        backgroundColor: '#4EA8DE',
-        borderRadius: 999
+        borderRadius: 999,
+        marginRight: 8
     },
     name: {
         color: '#F2F2F2',
-        fontSize: 16,
+        fontSize: 18,
         marginLeft: 8,
-        marginRight: 16
     },
     nameCompleted: {
         color: '#808080',
-        fontSize: 16,
-        marginLeft: 8,
-        marginRight: 16,
+        fontSize: 18,
         textDecorationLine: 'line-through',
     },
     button: {
@@ -33,8 +35,7 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     imageStyle: {
-        width: 32,
-        height: 32,
-        color: '#808080'
+        width: 44,
+        height: 44,
     }
 })

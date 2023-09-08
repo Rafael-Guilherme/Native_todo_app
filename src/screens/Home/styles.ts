@@ -35,14 +35,14 @@ export const styles = StyleSheet.create({
         height: 54,
         backgroundColor: '#262626',
         color: '#F2F2F2',
+        borderWidth: 1,
         borderRadius: 6,
         padding: 16,
         marginRight: 8,
-        fontSize: 16,
-        outlineColor: ''
+        fontSize: 16
     },
     inputFocused: {
-        borderColor: '#5E60CE'
+        borderColor: '#5E60CE',
     },
     buttonText: {
         fontSize: 24,

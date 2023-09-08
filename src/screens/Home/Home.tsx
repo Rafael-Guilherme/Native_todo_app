@@ -1,15 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Text, View, TextInput, Pressable, FlatList, Alert, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import { styles } from './styles';
 import Task from '../../components/Tasks';
 
+interface TaskProps {
+    id: number
+    text: string
+    completed: boolean
+}
+
 export default function Home() {
-    const [tasks, setTasks] = useState<string[]>([])
+    const [tasks, setTasks] = useState<TaskProps[]>([])
     const [taskName, setTaskName] = useState('')
-    const [completed, setCompleted] = useState<number[]>([])
+    const [completed, setCompleted] = useState(0)
     const [isFocused, setIsFocused] = useState(false);
+
+    useEffect(() => {
+        const count = tasks.filter((task) => task.completed).length
+        setCompleted(count)
+    },[tasks])
 
     const handleFocus = () => {
         setIsFocused(true);
@@ -20,27 +31,26 @@ export default function Home() {
     };
 
     function handleTaskAdd() {
-        if (tasks.includes(taskName)) {
-            return Alert.alert("Tarefa já existente", "Já existe uma tarefa na lista com esse nome!")
+        const newTask = {
+            id: Math.random(),
+            text: taskName,
+            completed: false
         }
 
-        setTasks(prevState => [...prevState, taskName])
+        setTasks(prevTask => [...prevTask, newTask])
         setTaskName('')
     }
 
-    function handleTaskCompleted(index: number) {
-        if(completed.includes(index)) {
-            setCompleted(prevState => prevState.filter(item => item !== index))
-        } else {
-            setCompleted(prevState => [...prevState, index])
-        }
+    function handleTaskCompleted(taskId: number) {
+        setTasks((prevTasks) => prevTasks.map((task) => task.id === taskId ? {...task, completed: !task.completed} : task))
+
     }
 
-    function handleTaskRemove(name: string) {
-        Alert.alert("Remover", `Remover o task ${name}?`, [
+    function handleTaskRemove(taskId: number) {
+        Alert.alert("Remover", `Tem certeza que deseja remover essa tarefa?`, [
             {
                 text: 'Sim',
-                onPress: () => setTasks(prevState => prevState.filter(task => task !== name))
+                onPress: () => setTasks(prevTask => prevTask.filter(task => task.id !== taskId))
             },
             {
                 text: 'Não',
@@ -63,7 +73,7 @@ export default function Home() {
                         onBlur={handleBlur}
                         style={[
                             styles.input,
-                            {borderColor: isFocused ? '#5E60CE' : '', borderWidth: 1}
+                            isFocused ? styles.inputFocused : null,
                           ]}
                         placeholder="Adicione uma nova tarefa"
                         placeholderTextColor="#808080"
@@ -72,7 +82,7 @@ export default function Home() {
                         <Text style={styles.buttonText}>+</Text>
                     </Pressable>
                 </View>
-
+                
                 <View style={styles.displayContainer}>
                     <View style={styles.taskInfoDisplay}>
                         <Text style={styles.taskTextCreate}>
@@ -90,7 +100,7 @@ export default function Home() {
                         </Text>
                         <View style={styles.taskNumberContainer}>
                             <Text style={styles.taskNumber}>
-                                {completed.length} 
+                                {completed} 
                             </Text> 
                         </View>
                     </View>
@@ -98,14 +108,13 @@ export default function Home() {
 
                 <FlatList
                     data={tasks}
-                    keyExtractor={item => item}
-                    renderItem={({ item, index }) => (
-                        <Task 
-                            key={item} 
-                            name={item} 
-                            onRemove={() => handleTaskRemove(item)}
-                            isCompleted={completed.includes(index)}
-                            toggleCompletion={() => handleTaskCompleted(index)}
+                    keyExtractor={(item) => item.text}
+                    renderItem={({ item }) => (
+                        <Task
+                            name={item.text} 
+                            onRemove={() => handleTaskRemove(item.id)}
+                            isCompleted={item.completed}
+                            toggleCompletion={() => handleTaskCompleted(item.id)}
                         />
                     )}
                     showsVerticalScrollIndicator={false}
